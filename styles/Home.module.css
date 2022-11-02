@@ -127,3 +127,17 @@
     filter: invert(1);
   }
 }
+
+.taskItem {
+  list-style-type: none;
+  margin: 30px 5px;
+  font-size: 1.5em;
+}
+.taskItem:hover {
+  color: blue;
+}
+.names {
+  list-style-type: none;
+  margin: 30px 5px;
+  font-size: 1.5em;
+}

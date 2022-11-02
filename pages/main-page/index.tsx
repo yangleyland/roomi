@@ -1,16 +1,15 @@
 import styled from 'styled-components';
-import Navbar from '../components/navbar/navbar';
-import Info from '../components/info/info';
+import NavbarAlt from '../../components/navbar-alt/navbar-alt';
+import MainPage from '../../components/main-page/main-page';
 
-export default function Index() {
+export default function Home() {
   return (
     <MainWrapper>
-      <Navbar/>
-      <Info/>
+      <NavbarAlt/>
+      <MainPage/>
     </MainWrapper>
   );
 }
-
 
 const MainWrapper = styled.div`
   display: flex;

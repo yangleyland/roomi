@@ -1,16 +1,19 @@
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
 import styled from 'styled-components';
-import Navbar from '../components/navbar/navbar';
-import Info from '../components/info/info';
+import NavbarAlt from '../../components/navbar-alt/navbar-alt';
+import Navbar from '../../components/navbar/navbar';
+import Login from '../../components/login/login';
+import Create from '../../components/create/create';
 
-export default function Index() {
+export default function Home() {
   return (
     <MainWrapper>
-      <Navbar/>
-      <Info/>
+      <NavbarAlt/>
+      <Create/>
     </MainWrapper>
   );
 }
-
 
 const MainWrapper = styled.div`
   display: flex;
