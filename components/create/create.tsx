@@ -1,15 +1,17 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import { doc, setDoc } from "firebase/firestore"; 
+import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase/initFirebase'
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from 'next/router';
 
 
 /* eslint-disable-next-line */
-export interface CreateProps {}
+export interface CreateProps {
+  count: string;
+}
 
 const StyledCreate = styled.div`
   background-color: white;
@@ -26,13 +28,17 @@ export function Create(props: CreateProps) {
   const emailRef = useRef(null);
   const passcodeRef = useRef(null);
   const router = useRouter();
+  const [users, setUsers] = useState([])
+
 
   const handleSubmit = async event => {
+
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
 
     try {
       await setDoc(doc(db, "users", firstRef.current.value), {
+          group: props.count,
           email: emailRef.current.value,
           id: 7,
           points: 0,
@@ -44,13 +50,29 @@ export function Create(props: CreateProps) {
         console.log(error)
         alert(error)
     }
-    // const auth = getAuth();
+    try {
+      await updateDoc(doc(db, "groups", props.count), {
+          members: arrayUnion(emailRef.current.value)
+        });
+      // alert ('Data was succesfully updated')
+    } catch (error) {
+      try {
+        await setDoc(doc(db, "groups",props.count), {
+            members: arrayUnion(emailRef.current.value)
+          });
+        // alert ('Data was succesfully updated')
+      } catch (error) {
+          console.log(error)
+          alert(error)
+      }
+    }
     createUserWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
       .then((userCredential) => {
         // Signed in 
-        console.log("you are registered")
-        router.push("../signin");
-        // ...
+        console.log(firstRef.current.value)
+        // router.push("../signin");
+        
+        
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -68,17 +90,18 @@ export function Create(props: CreateProps) {
     <StyledCreate>
         <HeaderText>Create New Group</HeaderText>
         <FormContainer>
+
             <Form onSubmit={handleSubmit}>
-                <label style={{margin: 5, fontWeight: "bold"}} htmlFor="URLfrom">Add Roommate:</label>
+                {/* <label style={{margin: 5, fontWeight: "bold"}} htmlFor="URLfrom">Add Roommate:</label> */}
                 <label style={{margin: 5}} htmlFor="name">name: </label>
                 <input style={{margin: 5}} ref={firstRef} type="name" id="name" name="name" required/>
                 <label style={{margin: 5}} htmlFor="email">email: </label>
                 <input style={{margin: 5}} ref={emailRef} type="email" id="email" name="email" required/>
                 <label style={{margin: 5}} htmlFor="passcode">passcode: </label>
                 <input style={{margin: 5}} ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
+                <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Roommate"/>
                 <label style={{margin: 5}} htmlFor="URLfrom">Add Task:</label>
                 <input style={{margin: 5}} type="text" id="URLfrom" name="URLfrom" />
-                <input style={{margin: 5, width: 90}} type="submit" id="submit" value="create user"/>
             </Form>
       </FormContainer>
     </StyledCreate>

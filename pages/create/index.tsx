@@ -5,12 +5,30 @@ import NavbarAlt from '../../components/navbar-alt/navbar-alt';
 import Navbar from '../../components/navbar/navbar';
 import Login from '../../components/login/login';
 import Create from '../../components/create/create';
+import { collection, doc, getCountFromServer, setDoc } from "firebase/firestore"; 
+import { db,auth } from '../../firebase/initFirebase'
 
-export default function Home() {
+
+export async function getStaticProps() {
+  const coll = collection(db, "groups");
+  const snapshot = await getCountFromServer(coll);
+  const value = snapshot.data().count;
+  return{
+    props:{count: String(value)}
+  } 
+}
+
+
+export default function Home({count}) {
+  //function to get count
+  //set variable equal to const
+  //pass into count variable
+
+
   return (
     <MainWrapper>
       <NavbarAlt/>
-      <Create/>
+      <Create count={count}/>
     </MainWrapper>
   );
 }
