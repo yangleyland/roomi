@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 import Link from 'next/link';
+import { useRef } from 'react';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../../firebase/initFirebase.js"
+import router from 'next/router.js';
 
 /* eslint-disable-next-line */
 export interface LoginProps {}
@@ -15,13 +19,34 @@ const StyledLogin = styled.div`
 `;
 
 export function Login(props: LoginProps) {
+  const emailRef = useRef(null);
+  const passcodeRef = useRef(null);
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    signInWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
+      .then((userCredential) => {
+        // Signed in 
+        console.log("you are signed in")
+        router.push("../main-page");
+        // ...
+      })
+      .catch((error) => {
+        console.log("failure")
+        // ..
+      });
+  };
+
+
   return(
     <StyledLogin>
         <HeaderText>Login</HeaderText>
         <FormContainer>
-            <Form>
-                <label style={{margin: 5}} htmlFor="URLfrom">Group ID:</label>
-                <input style={{margin: 5}} type="text" id="URLfrom" name="URLfrom" />
+            <Form onSubmit={handleSubmit}>
+                <label style={{margin: 5}} htmlFor="email">Email:</label>
+                <input style={{margin: 5}} ref={emailRef} type="email" id="email" name="email" required/>
+                <label style={{margin: 5}} htmlFor="passcode">Passcode:</label>
+                <input style={{margin: 5}} ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
                 
                 <input style={{margin: 5, width: 90}} type="submit" id="submit" />
                 <p>Don't have an account? <Link style={{color: "blue"}}  passHref href="../create">Create New Account</Link></p>

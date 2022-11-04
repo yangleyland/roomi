@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import Navbar from '../components/navbar/navbar';
 import Info from '../components/info/info';
+import firebase from '../firebase/initFirebase'
+
+firebase()
 
 export default function Index() {
   return (

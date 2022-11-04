@@ -17,7 +17,7 @@ const StyledNavbar = styled.div`
 export function NavbarAlt(props: NavbarProps) {
   return (
     <StyledNavbar>
-      <Link passHref href="../main-page"><Image src="/home.png" alt={''}/></Link>
+      <Link passHref href="../"><Image src="/home.png" alt={''}/></Link>
     </StyledNavbar>
   );
 }
