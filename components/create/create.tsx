@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"; 
+import { arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase/initFirebase'
 import { createUserWithEmailAndPassword} from "firebase/auth";
 import { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import Link from 'next/link';
 
 
 /* eslint-disable-next-line */
@@ -38,6 +39,34 @@ export function Create(props: CreateProps) {
   const passcodeRef = useRef(null);
   const taskRef = useRef(null);
   const pointRef = useRef(null);
+  const [users, setUsers] = useState(['']);
+
+  useEffect(() => {
+    async function fetchData() {
+      const docRef = doc(db, "groups", props.count);
+      const docSnap = await getDoc(docRef);
+      const ar=[];
+      if (docSnap.exists()) {
+        // console.log("Document data:", docSnap.data().members);
+        if (docSnap.data().members){
+          docSnap.data().members.forEach(element => {
+            ar.push(element);
+          });
+          console.log(ar);
+          setUsers(ar)
+        }
+        
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+}
+    }
+    fetchData()
+  }, [uid])
+
+
+
+  
 
   useEffect(() => {
     async function fetchData() {
@@ -132,6 +161,9 @@ export function Create(props: CreateProps) {
   return(
     <StyledCreate>
         <HeaderText>Create New Group</HeaderText>
+        {users.map((user)=>(
+          <p>{user}</p>
+        ))}
         <FormContainer>
 
             <Form onSubmit={handleSubmit}>
@@ -150,6 +182,7 @@ export function Create(props: CreateProps) {
                 <input style={{margin: 5}} ref={pointRef} type="text" id="points" name="points" required/>
                 <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Task"/>
             </Form>
+            <Link style={{color: "blue"}}  passHref href="../signin">Create New Account</Link>
       </FormContainer>
     </StyledCreate>
 ); 
@@ -172,6 +205,7 @@ const FormContainer = styled.div`
   justify-content: center;
   align-items:center;
   flex-direction: column;
+  margin-top: 40px;
 `;
 const Form = styled.form`
   position: relative;
