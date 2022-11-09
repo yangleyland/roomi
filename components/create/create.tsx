@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase/initFirebase'
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword} from "firebase/auth";
 import { useRouter } from 'next/router';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 /* eslint-disable-next-line */
@@ -23,66 +24,108 @@ const StyledCreate = styled.div`
   align-items: center;
 `;
 
+
+
 export function Create(props: CreateProps) {
+  const user = useAuthState(auth);
+  const [uid, setUid] = useState(' ');
+  const [email, setEmail] = useState(' ');
+  const [username, setUsername] = useState(' ');
+  const [task, setTask] = useState(' ');
+  const [point, setPoint] = useState(0);
   const firstRef = useRef(null);
   const emailRef = useRef(null);
   const passcodeRef = useRef(null);
-  const router = useRouter();
-  const [users, setUsers] = useState([])
+  const taskRef = useRef(null);
+  const pointRef = useRef(null);
 
+  useEffect(() => {
+    async function fetchData() {
+      if (uid!=" "){
+        try {
+          await setDoc(doc(db, "users", uid), {
+              group: props.count,
+              email: email,
+              id: 7,
+              points: 0,
+              username: username,
+            });
+          // alert ('Data was succesfully updated')
+        } catch (error) {
+            console.log(error)
+            alert(error)
+        }
+    
+        try {
+          await updateDoc(doc(db, "groups", props.count), {
+              members: arrayUnion(email)
+            });
+          // alert ('Data was succesfully updated')
+        } catch (error) {
+          try {
+            await setDoc(doc(db, "groups",props.count), {
+                members: arrayUnion(email)
+              });
+            // alert ('Data was succesfully updated')
+          } catch (error) {
+              console.log(error)
+              alert(error)
+          }
+        }
+        setUid(" ");     
+      }
+    }
+    fetchData()
+  }, [uid])
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        await updateDoc(doc(db, "groups", props.count), {
+          tasks: arrayUnion({task,point})
+          });
+        // alert ('Data was succesfully updated')
+      } catch (error) {
+        try {
+          await setDoc(doc(db, "groups",props.count), {
+            tasks: arrayUnion({task,point})
+            });
+          // alert ('Data was succesfully updated')
+        } catch (error) {
+            console.log(error)
+            alert(error)
+        }
+      }
+    }
+    fetchData()
+  }, [point,task])
 
   const handleSubmit = async event => {
 
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
 
-    try {
-      await setDoc(doc(db, "users", firstRef.current.value), {
-          group: props.count,
-          email: emailRef.current.value,
-          id: 7,
-          points: 0,
-          username: firstRef.current.value,
-          passcode: passcodeRef.current.value
-        });
-      // alert ('Data was succesfully updated')
-    } catch (error) {
-        console.log(error)
-        alert(error)
-    }
-    try {
-      await updateDoc(doc(db, "groups", props.count), {
-          members: arrayUnion(emailRef.current.value)
-        });
-      // alert ('Data was succesfully updated')
-    } catch (error) {
-      try {
-        await setDoc(doc(db, "groups",props.count), {
-            members: arrayUnion(emailRef.current.value)
-          });
-        // alert ('Data was succesfully updated')
-      } catch (error) {
-          console.log(error)
-          alert(error)
-      }
-    }
     createUserWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
       .then((userCredential) => {
-        // Signed in 
-        console.log(firstRef.current.value)
-        // router.push("../signin");
-        
-        
+        const user=userCredential.user;
+        setUid(user.uid);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log("failure")
         alert(errorMessage)
-        // ..
       });
 
-    // 👇️ clear all input values in the form
+    setEmail(emailRef.current.value);
+    setUsername(firstRef.current.value);
+    event.target.reset();
+  };
+  const addTask = event => {
+    console.log('handleSubmit ran');
+    event.preventDefault(); // 👈️ prevent page refresh
+    setTask(taskRef.current.value);
+    setPoint(pointRef.current.value);
+
     event.target.reset();
   };
 
@@ -100,8 +143,12 @@ export function Create(props: CreateProps) {
                 <label style={{margin: 5}} htmlFor="passcode">passcode: </label>
                 <input style={{margin: 5}} ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
                 <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Roommate"/>
-                <label style={{margin: 5}} htmlFor="URLfrom">Add Task:</label>
-                <input style={{margin: 5}} type="text" id="URLfrom" name="URLfrom" />
+            </Form>
+            <Form onSubmit={addTask}>
+                <label style={{margin: 5}} htmlFor="task">Add Task:</label>
+                <input style={{margin: 5}} ref={taskRef} type="text" id="task" name="task" required/>
+                <input style={{margin: 5}} ref={pointRef} type="text" id="points" name="points" required/>
+                <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Task"/>
             </Form>
       </FormContainer>
     </StyledCreate>
@@ -123,6 +170,8 @@ const FormContainer = styled.div`
   width: 45%;
   display: flex;
   justify-content: center;
+  align-items:center;
+  flex-direction: column;
 `;
 const Form = styled.form`
   position: relative;

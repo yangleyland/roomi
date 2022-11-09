@@ -1,5 +1,7 @@
+import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import styled from 'styled-components';
+import { db,auth } from '../../firebase/initFirebase'
 // import Image from 'next/image';
 
 /* eslint-disable-next-line */
@@ -15,9 +17,19 @@ const StyledNavbar = styled.div`
 `;
 
 export function NavbarAlt(props: NavbarProps) {
+
+  const handleClick = (e, path) => {
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      console.log("signout successful")
+    }).catch((error) => {
+      // An error happened.
+    });
+  };
+  
   return (
     <StyledNavbar>
-      <Link passHref href="../"><Image src="/home.png" alt={''}/></Link>
+      <Link onClick={(e) => handleClick(e, "/about")} passHref href="../"><Image src="/home.png" alt={''}/></Link>
     </StyledNavbar>
   );
 }
