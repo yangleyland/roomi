@@ -49,7 +49,7 @@ export function Create(props: CreateProps) {
     async function fetchData() {
       const docRef = doc(db, "groups", props.count);
       const docSnap = await getDoc(docRef);
-      const ar=[];
+      const ar=Array;//change
       if (docSnap.exists()) {
         
         // console.log("Document data:", docSnap.data().members);
