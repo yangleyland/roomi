@@ -14,7 +14,12 @@ export default function Home({}) {
   const auth=getAuth();
   const [user,loading] = useAuthState(auth);
   const [name, setName] = useState('');
+  const [groupId, setGroupId] = useState('');
   const [uid,setUid] = useState(' ');
+  const [users, setUsers] = useState(['']);
+  const [tasks, setTasks] = useState(['']);
+  const [temp,setTemp] = useState(0);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -25,20 +30,45 @@ export default function Home({}) {
         setUid(user.uid); //this statement is not fucking working 
         console.log("user id:")
         console.log(user.uid);
-
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          console.log(uid)
+          console.log("Document data:", docSnap.data().username);
+          setName(docSnap.data().username);
+          setGroupId(docSnap.data().group)
+          const docRef2 = doc(db, "groups", docSnap.data().group);
+          const docSnap2 = await getDoc(docRef2);
+          const userArray=[];
+          const taskArray=[];
+          if (docSnap2.exists()) {
+            // console.log("Document data:", docSnap.data().members);
+            if (docSnap2.data().members){
+              docSnap2.data().members.forEach(element => {
+                userArray.push(element);
+              });
+              setUsers(userArray);
+            }
+            if (docSnap2.data().tasks){
+              docSnap2.data().tasks.forEach(element => {
+                taskArray.push([element.task,element.point]);
+                console.log("task array",taskArray);
+              });
+              setTasks(taskArray);
+              
+            }
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }      
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such user!");      
+          setName("not working");
+        }    
+        setTemp(temp+1);
       }
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        console.log(uid)
-        console.log("Document data:", docSnap.data().username);
-        setName(docSnap.data().username);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such user!");      
-        setName("not working");
-
-      }
+      
     }
     fetchData()
   }, [])
@@ -48,7 +78,7 @@ export default function Home({}) {
       <MainWrapper>
         <NavbarAlt/>
         <p style={{margin: 60}}>Welcome, loading...</p>
-        <MainPage/>
+        <MainPage varChange={temp} members={users} tasks={tasks}/>
       </MainWrapper>
     );
   }
@@ -57,7 +87,7 @@ export default function Home({}) {
       <MainWrapper>
         <NavbarAlt/>
         <p style={{margin: 60}}>Welcome, {name}</p>
-        <MainPage/>
+        <MainPage varChange={temp} tasks={tasks} members={users}/>
       </MainWrapper>
     );
   } 

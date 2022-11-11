@@ -1,9 +1,16 @@
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { db } from '../../firebase/initFirebase';
 import styles from '../../styles/Home.module.css';
 
 
 /* eslint-disable-next-line */
-export interface PointsProps {}
+export interface PointsProps {
+  members:Array;
+  temp: number;
+  userValues:Array;
+}
 
 const StyledPoints = styled.div`
   background-color: white;
@@ -15,6 +22,48 @@ const StyledPoints = styled.div`
 `;
 
 export function Points(props: PointsProps) {
+  const [users, setUsers] = useState([]);
+  
+  
+
+
+  useEffect(() => {
+    async function fetchData() {
+      const arr=[];
+      props.members.forEach(async member => {
+      if (member){
+        console.log("member",member);
+        const docRef = doc(db, "users", member);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            console.log("docSnap",docSnap.data().points)
+            arr.push([docSnap.data().username,docSnap.data().points]);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+        console.log("array",arr)
+        
+        
+        if (users!=arr && arr.length==props.members.length){
+          setUsers(arr);
+        }
+        
+       
+      }
+      })
+      
+    }
+    fetchData()
+  }, [props.members,props.temp])
+
+
+  console.log("tempVar",props.temp);
+  useEffect(() => {
+    setUsers(users);
+  }, [users]);
+  console.log("users:  ",users)
+
   return (
     <StyledPoints>
       <NavbarText>
@@ -22,11 +71,9 @@ export function Points(props: PointsProps) {
       </NavbarText>
       <NameContainer>
         <ul>
-            <li className={styles.names}>Leyland: 100</li>
-            <li className={styles.names}>Isaac: 99</li>
-            <li className={styles.names}>Albert: 98</li>
-            <li className={styles.names}>Elijah: 97</li>
-            <li className={styles.names}>Sam: 96</li>
+            {users.map((user)=>(
+              <li className={styles.names}>{user[0]}: {user[1]}</li>
+            ))}
         </ul>
       </NameContainer>
     </StyledPoints>

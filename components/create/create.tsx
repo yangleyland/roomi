@@ -39,7 +39,11 @@ export function Create(props: CreateProps) {
   const passcodeRef = useRef(null);
   const taskRef = useRef(null);
   const pointRef = useRef(null);
-  const [users, setUsers] = useState(['']);
+  const [users, setUsers] = useState([]);
+
+  useEffect(()=>{
+    console.log("users",users);
+  })
 
   useEffect(() => {
     async function fetchData() {
@@ -47,19 +51,27 @@ export function Create(props: CreateProps) {
       const docSnap = await getDoc(docRef);
       const ar=[];
       if (docSnap.exists()) {
+        
         // console.log("Document data:", docSnap.data().members);
         if (docSnap.data().members){
-          docSnap.data().members.forEach(element => {
-            ar.push(element);
+          docSnap.data().members.forEach( async element => {
+            const docRef2 = doc(db, "users", element);
+            const docSnap2 = await getDoc(docRef2);
+            if (docSnap2.exists()) {
+              ar.push(docSnap2.data().username)
+            } else {
+              console.log("No such document!");
+            }
+            setUsers(ar);
           });
-          console.log(ar);
-          setUsers(ar)
+          
+          // console.log("users",users);
         }
-        
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
-}
+      } 
+      console.log(users);
     }
     fetchData()
   }, [uid])
@@ -75,7 +87,7 @@ export function Create(props: CreateProps) {
           await setDoc(doc(db, "users", uid), {
               group: props.count,
               email: email,
-              id: 7,
+              id: uid,
               points: 0,
               username: username,
             });
@@ -87,13 +99,13 @@ export function Create(props: CreateProps) {
     
         try {
           await updateDoc(doc(db, "groups", props.count), {
-              members: arrayUnion(email)
+              members: arrayUnion(uid)
             });
           // alert ('Data was succesfully updated')
         } catch (error) {
           try {
             await setDoc(doc(db, "groups",props.count), {
-                members: arrayUnion(email)
+                members: arrayUnion(uid)
               });
             // alert ('Data was succesfully updated')
           } catch (error) {
@@ -109,16 +121,21 @@ export function Create(props: CreateProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        await updateDoc(doc(db, "groups", props.count), {
+        if (point>0){
+          await updateDoc(doc(db, "groups", props.count), {
           tasks: arrayUnion({task,point})
           });
-        // alert ('Data was succesfully updated')
+        // alert ('Data was succesfully updated')        
+        }
       } catch (error) {
         try {
-          await setDoc(doc(db, "groups",props.count), {
+          if (point>0){
+            await setDoc(doc(db, "groups",props.count), {
             tasks: arrayUnion({task,point})
             });
-          // alert ('Data was succesfully updated')
+          // alert ('Data was succesfully updated')          
+          }
+
         } catch (error) {
             console.log(error)
             alert(error)

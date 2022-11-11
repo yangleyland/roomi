@@ -1,8 +1,15 @@
+import { getAuth } from 'firebase/auth';
+import { doc, increment, updateDoc } from 'firebase/firestore';
 import styled from 'styled-components';
+import { db } from '../../firebase/initFirebase';
 import styles from '../../styles/Home.module.css';
 
+
 /* eslint-disable-next-line */
-export interface TaskListProps {}
+export interface TaskListProps {
+  tasks: Array;
+  clicked: Function;
+}
 
 const StyledTaskList = styled.div`
   background-color: white;
@@ -15,15 +22,24 @@ const StyledTaskList = styled.div`
 `;
 
 export function TaskList(props: TaskListProps) {
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+    } else {
+    }
+
   return (
     <StyledTaskList>
       <InnerDiv>
         <NavbarText>Tasks: ($DATE)</NavbarText>
         <TaskDiv>
             <ul>
-                <li className={styles.taskItem}>Dishes</li>
-                <li className={styles.taskItem}>Trash</li>
-                <li className={styles.taskItem}>Vacuuming</li>
+                {props.tasks.map((task)=>(
+                  <li className={styles.taskItem}><p>{task[0]}</p><button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</button></li>
+                ))}
+           
             </ul>
         </TaskDiv>
       </InnerDiv>
