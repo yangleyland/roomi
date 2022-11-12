@@ -39,18 +39,18 @@ export default function Home({}) {
           setGroupId(docSnap.data().group)
           const docRef2 = doc(db, "groups", docSnap.data().group);
           const docSnap2 = await getDoc(docRef2);
-          const userArray=[];
-          const taskArray=[];
+          const userArray:any=[];
+          const taskArray:any=[];
           if (docSnap2.exists()) {
             // console.log("Document data:", docSnap.data().members);
             if (docSnap2.data().members){
-              docSnap2.data().members.forEach(element => {
+              docSnap2.data().members.forEach((element: any) => {
                 userArray.push(element);
               });
               setUsers(userArray);
             }
             if (docSnap2.data().tasks){
-              docSnap2.data().tasks.forEach(element => {
+              docSnap2.data().tasks.forEach((element: any) => {
                 taskArray.push([element.task,element.point]);
                 console.log("task array",taskArray);
               });
