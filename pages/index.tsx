@@ -8,7 +8,6 @@ firebase()
 export default function Index() {
   return (
     <MainWrapper>
-      <Navbar/>
       <Info/>
     </MainWrapper>
   );

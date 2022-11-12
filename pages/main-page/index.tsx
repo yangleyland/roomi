@@ -100,7 +100,6 @@ const MainWrapper = styled.div`
   justify-content: flex-start;
   min-height: 100vh;
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
-
   background-position: fixed;
   background-attachment: local;
   background-repeat: no-repeat;
