@@ -19,12 +19,13 @@ const StyledLogin = styled.div`
 `;
 
 export function Login(props: LoginProps) {
-  const emailRef = useRef(null);
-  const passcodeRef = useRef(null);
+  const emailRef = useRef<any>(null);
+  const passcodeRef = useRef<any>(null);
 
-  const handleSubmit = event => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
-    signInWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
+    if (emailRef.current!=null && passcodeRef!=null){
+      signInWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
       .then((userCredential) => {
         // Signed in 
         console.log("you are signed in")
@@ -35,6 +36,8 @@ export function Login(props: LoginProps) {
         console.log("failure")
         // ..
       });
+    }
+
   };
 
 
