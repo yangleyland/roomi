@@ -49,12 +49,12 @@ export function Create(props: CreateProps) {
     async function fetchData() {
       const docRef = doc(db, "groups", props.count);
       const docSnap = await getDoc(docRef);
-      const ar=Array;//change
+      const ar:any=[];//change
       if (docSnap.exists()) {
         
         // console.log("Document data:", docSnap.data().members);
         if (docSnap.data().members){
-          docSnap.data().members.forEach( async element => {
+          docSnap.data().members.forEach( async (element: any) => {
             const docRef2 = doc(db, "users", element);
             const docSnap2 = await getDoc(docRef2);
             if (docSnap2.exists()) {
@@ -145,7 +145,7 @@ export function Create(props: CreateProps) {
     fetchData()
   }, [point,task])
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event: any) => {
 
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
@@ -166,7 +166,7 @@ export function Create(props: CreateProps) {
     setUsername(firstRef.current.value);
     event.target.reset();
   };
-  const addTask = event => {
+  const addTask = (event: any) => {
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
     setTask(taskRef.current.value);

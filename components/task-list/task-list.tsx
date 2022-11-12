@@ -7,7 +7,7 @@ import styles from '../../styles/Home.module.css';
 
 /* eslint-disable-next-line */
 export interface TaskListProps {
-  tasks: Array;
+  tasks: any;
   clicked: Function;
 }
 
@@ -36,7 +36,7 @@ export function TaskList(props: TaskListProps) {
         <NavbarText>Tasks: ($DATE)</NavbarText>
         <TaskDiv>
             <ul>
-                {props.tasks.map((task)=>(
+                {props.tasks.map((task:any)=>(
                   <li className={styles.taskItem}><p>{task[0]}</p><button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</button></li>
                 ))}
            

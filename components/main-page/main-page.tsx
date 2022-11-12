@@ -9,8 +9,8 @@ import { db } from '../../firebase/initFirebase';
 
 /* eslint-disable-next-line */
 export interface MainPageProps {
-  members:Array;
-  tasks:Array;
+  members:any;
+  tasks:any;
   varChange: number;
 }
 
@@ -31,7 +31,7 @@ export function MainPage(props: MainPageProps) {
     setTemp(temp+1);
     }, [props.varChange]); 
   
-  const mainClick = async (tasker) => {
+  const mainClick = async (tasker: [string, number]) => {
     const auth = getAuth();
     const user = auth.currentUser;
     const docRef1 = doc(db, "users", user.uid);
@@ -40,7 +40,7 @@ export function MainPage(props: MainPageProps) {
     });
 
 
-    const arr=[];
+    const arr:any=[];
     const docRef = doc(db, "users", tasker[0]);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {

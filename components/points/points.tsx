@@ -7,9 +7,9 @@ import styles from '../../styles/Home.module.css';
 
 /* eslint-disable-next-line */
 export interface PointsProps {
-  members:Array;
+  members:any;
   temp: number;
-  userValues:Array;
+  userValues:any;
 }
 
 const StyledPoints = styled.div`
@@ -29,8 +29,8 @@ export function Points(props: PointsProps) {
 
   useEffect(() => {
     async function fetchData() {
-      const arr=[];
-      props.members.forEach(async member => {
+      const arr:any=[];
+      props.members.forEach(async (member: any) => {
       if (member){
         console.log("member",member);
         const docRef = doc(db, "users", member);

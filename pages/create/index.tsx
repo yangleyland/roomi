@@ -23,8 +23,6 @@ export default function Home({count}) {
   //function to get count
   //set variable equal to const
   //pass into count variable
-
-
   return (
     <MainWrapper>
       <NavbarAlt/>

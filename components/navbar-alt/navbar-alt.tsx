@@ -18,7 +18,7 @@ const StyledNavbar = styled.div`
 
 export function NavbarAlt(props: NavbarProps) {
 
-  const handleClick = (e, path) => {
+  const handleClick = (e:any, path:any) => {
     signOut(auth).then(() => {
       // Sign-out successful.
       console.log("signout successful")
