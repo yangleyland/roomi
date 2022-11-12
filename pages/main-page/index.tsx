@@ -17,7 +17,7 @@ export default function Home({}) {
   const [groupId, setGroupId] = useState('');
   const [uid,setUid] = useState(' ');
   const [users, setUsers] = useState(['']);
-  const [tasks, setTasks] = useState(['']);
+  const [tasks, setTasks] = useState([]);
   const [temp,setTemp] = useState(0);
 
 

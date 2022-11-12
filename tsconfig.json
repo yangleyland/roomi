@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_document.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_document.js", "components/task-list/task-list.js", "pages/create/index.js", "pages/main-page/index.js", "pages/signin/index.js", "pages/_app.js", "pages/index.js"],
   "exclude": ["node_modules"]
 }

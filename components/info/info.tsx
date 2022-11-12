@@ -5,7 +5,8 @@ import styled from 'styled-components';
 export interface InfoProps {}
 
 const StyledInfo = styled.div`
-  background-color: white;
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,86,214,1) 100%);
+  
   width: 100%;
   height: 100vh;
   display: flex;
@@ -17,8 +18,9 @@ const StyledInfo = styled.div`
 export function Info(props: InfoProps) {
   return(
     <StyledInfo>
-        <HeaderText>Roomi.</HeaderText>
-        <SubText>The one solution to keeping your apartment clean</SubText>
+        <HeaderText><Image src="/logo.png" alt={''}/></HeaderText>
+        <SubText>live together. it's easy.</SubText>
+        <Description>easily track chores and schedules with your roommates in real-time.</Description>
     </StyledInfo>
 ); 
 }
@@ -26,12 +28,29 @@ export function Info(props: InfoProps) {
 export default Info;
 
 const HeaderText = styled.div`
-    color: black;
-    font-size: 3em;
-    margin: 10px;
+
 `;
 const SubText = styled.div`
-    color: grey;
-    margin: 10px;
-    font-size: 1em;
+font-family: 'Helvetica';
+font-style: normal;
+font-weight: 700;
+font-size: 35px;
+line-height: 60px;
+color: #0056D6;
+width: 400px;
+position: relative;
+left:10px;
 `;
+const Description = styled.div`
+  font-family: 'Helvetica';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 34px;
+width: 400px;
+position: relative;
+left:10px;
+`
+const Image = styled.img `
+  width: 400px;
+`

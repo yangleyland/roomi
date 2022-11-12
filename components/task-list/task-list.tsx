@@ -25,11 +25,7 @@ export function TaskList(props: TaskListProps) {
 
     const auth = getAuth();
     const user = auth.currentUser;
-
-    if (user) {
-    } else {
-    }
-
+    console.log("taskprops",props.tasks)
   return (
     <StyledTaskList>
       <InnerDiv>
@@ -37,7 +33,7 @@ export function TaskList(props: TaskListProps) {
         <TaskDiv>
             <ul>
                 {props.tasks.map((task:any)=>(
-                  <li className={styles.taskItem}><p>{task[0]}</p><button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</button></li>
+                  <li className={styles.taskItem}><p>{task[0]}: {task[1]} points</p><button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</button></li>
                 ))}
            
             </ul>
