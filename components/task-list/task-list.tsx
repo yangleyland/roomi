@@ -12,7 +12,9 @@ export interface TaskListProps {
 }
 
 const StyledTaskList = styled.div`
-  background-color: white;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+
+
   width: 60%;
   height: 100%;
   display: flex;
@@ -54,7 +56,8 @@ const InnerDiv = styled.div `
     width: 90%;
     margin-top: 40px;
     height: 85%;
-    background-color: #d9d9d9;
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -65,7 +68,8 @@ const TaskDiv = styled.div `
     margin-top: 40px;
     margin-bottom: 30px;
     height: 85%;
-    background-color: #d9d9d9;
+    background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+
     display: flex;
     justify-content: flex-start;
     align-items: top;

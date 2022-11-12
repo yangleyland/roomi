@@ -1,3 +1,4 @@
+import router from 'next/router';
 import styled from 'styled-components';
 
 
@@ -14,6 +15,13 @@ const StyledInfo = styled.div`
   justify-content: center;
   align-items: center;
 `;
+const handleLogIn =  () => {
+  router.push("../signin");
+}
+const handleSignUp =  () => {
+  router.push("../create");
+}
+
 
 export function Info(props: InfoProps) {
   return(
@@ -21,8 +29,8 @@ export function Info(props: InfoProps) {
         <HeaderText><Image src="/logo.png" alt={''}/></HeaderText>
         <SubText>live together. it's easy.</SubText>
         <Description>easily track chores and schedules with your roommates in real-time.</Description>
-        <LogInButton>Log-in</LogInButton>
-        <SignUpButton>Create Account</SignUpButton>
+        <LogInButton onClick={handleLogIn}>Log-in</LogInButton>
+        <SignUpButton onClick={handleSignUp}>Create Account</SignUpButton>
     </StyledInfo>
 ); 
 }

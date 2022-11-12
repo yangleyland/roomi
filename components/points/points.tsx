@@ -13,7 +13,8 @@ export interface PointsProps {
 }
 
 const StyledPoints = styled.div`
-  background-color: white;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+
   width: 40%;
   height: 100%;
   display: flex;
