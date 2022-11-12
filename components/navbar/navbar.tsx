@@ -5,7 +5,7 @@ import styled from 'styled-components';
 export interface NavbarProps {}
 
 const StyledNavbar = styled.div`
-  background-color: #d9d9d9;
+  background-color: #0056D6;
   width: 100%;
   display: flex;
   justify-content: right;
@@ -30,4 +30,7 @@ const NavbarText = styled.p `
   color: black;
   font-weight: bold;
   margin: 10px 20px 10px 10px;
+  a {
+    color: white;
+  }
 `;

@@ -43,13 +43,13 @@ left:10px;
 `;
 const Description = styled.div`
   font-family: 'Helvetica';
-font-style: normal;
-font-weight: 300;
-font-size: 24px;
-line-height: 34px;
-width: 400px;
-position: relative;
-left:10px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 34px;
+  width: 400px;
+  position: relative;
+  left:10px;
 `
 const Image = styled.img `
   width: 400px;
