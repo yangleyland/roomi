@@ -34,11 +34,11 @@ export function Create(props: CreateProps) {
   const [username, setUsername] = useState(' ');
   const [task, setTask] = useState(' ');
   const [point, setPoint] = useState(0);
-  const firstRef = useRef(null);
-  const emailRef = useRef(null);
-  const passcodeRef = useRef(null);
-  const taskRef = useRef(null);
-  const pointRef = useRef(null);
+  const firstRef = useRef<any>(null);
+  const emailRef = useRef<any>(null);
+  const passcodeRef = useRef<any>(null);
+  const taskRef = useRef<any>(null);
+  const pointRef = useRef<any>(null);
   const [users, setUsers] = useState([]);
 
   useEffect(()=>{
@@ -149,8 +149,8 @@ export function Create(props: CreateProps) {
 
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
-
-    createUserWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
+    if (emailRef.current != null && passcodeRef.current!=null && firstRef.current!=null){
+       createUserWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
       .then((userCredential) => {
         const user=userCredential.user;
         setUid(user.uid);
@@ -162,15 +162,20 @@ export function Create(props: CreateProps) {
         alert(errorMessage)
       });
 
-    setEmail(emailRef.current.value);
-    setUsername(firstRef.current.value);
+      setEmail(emailRef.current.value);
+      setUsername(firstRef.current.value);
+    }
+   
     event.target.reset();
   };
   const addTask = (event: any) => {
     console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
-    setTask(taskRef.current.value);
-    setPoint(pointRef.current.value);
+    if (taskRef.current!=null && pointRef.current!=null){
+      setTask(taskRef.current.value);
+      setPoint(pointRef.current.value);
+    }
+
 
     event.target.reset();
   };

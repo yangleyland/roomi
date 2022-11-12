@@ -34,10 +34,13 @@ export function MainPage(props: MainPageProps) {
   const mainClick = async (tasker: [string, number]) => {
     const auth = getAuth();
     const user = auth.currentUser;
-    const docRef1 = doc(db, "users", user.uid);
-    await updateDoc(docRef1, {
+    if (user){
+      const docRef1 = doc(db, "users", user.uid);
+      await updateDoc(docRef1, {
       points: increment(tasker[1])
     });
+    }
+
 
 
     const arr:any=[];
