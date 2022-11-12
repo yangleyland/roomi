@@ -19,7 +19,7 @@ export async function getStaticProps() {
 }
 
 
-export default function Home({count}) {
+export default function Home({count}:any) {
   //function to get count
   //set variable equal to const
   //pass into count variable
