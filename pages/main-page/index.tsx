@@ -77,7 +77,7 @@ export default function Home({}) {
     return (
       <MainWrapper>
         <NavbarAlt/>
-        <p style={{margin: 60}}>Welcome, loading...</p>
+        <p style={{margin: 60, backgroundColor:'transparent'}}>Welcome, loading...</p>
         <MainPage varChange={temp} members={users} tasks={tasks}/>
       </MainWrapper>
     );
@@ -86,7 +86,7 @@ export default function Home({}) {
     return (
       <MainWrapper>
         <NavbarAlt/>
-        <p style={{margin: 60}}>Welcome, {name}</p>
+        <p style={{margin: 60, backgroundColor:'transparent'}}>Welcome, {name}</p>
         <MainPage varChange={temp} tasks={tasks} members={users}/>
       </MainWrapper>
     );
@@ -99,6 +99,7 @@ const MainWrapper = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   min-height: 100vh;
+  border: 1px solid red;
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
   background-position: fixed;
   background-attachment: local;
