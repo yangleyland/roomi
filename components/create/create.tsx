@@ -246,7 +246,7 @@ const BlueText=styled.span`
 const InputContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.6);
   width: 40%;
-  height: 70%;
+  height: 560px;
   display: flex;
   flex-direction: column;
   justify-content: center;
