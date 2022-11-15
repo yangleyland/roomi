@@ -5,7 +5,7 @@ import 'firebase/firestore'
 import { arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase/initFirebase'
 import { createUserWithEmailAndPassword} from "firebase/auth";
-import { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Link from 'next/link';
 
@@ -175,46 +175,113 @@ export function Create(props: CreateProps) {
       setTask(taskRef.current.value);
       setPoint(pointRef.current.value);
     }
-
-
     event.target.reset();
+  };
+  const handleClick = () => {
+    router.push("../signin");
   };
 
   return(
     <StyledCreate>
-        <HeaderText>Create New Group</HeaderText>
+      <InputContainer>
+      <HeaderText>Create New <BlueText>Roomi</BlueText> Group</HeaderText>
         {users.map((user)=>(
           <p>{user}</p>
         ))}
         <FormContainer>
-
             <Form onSubmit={handleSubmit}>
-                {/* <label style={{margin: 5, fontWeight: "bold"}} htmlFor="URLfrom">Add Roommate:</label> */}
-                <label style={{margin: 5}} htmlFor="name">name: </label>
-                <input style={{margin: 5}} ref={firstRef} type="name" id="name" name="name" required/>
-                <label style={{margin: 5}} htmlFor="email">email: </label>
-                <input style={{margin: 5}} ref={emailRef} type="email" id="email" name="email" required/>
-                <label style={{margin: 5}} htmlFor="passcode">passcode: </label>
-                <input style={{margin: 5}} ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
-                <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Roommate"/>
+                <Input style={{margin: 5}} placeholder="name" ref={firstRef} type="name" id="name" name="name" required/>
+                <Input style={{margin: 5}} ref={emailRef} placeholder="email" type="email" id="email" name="email" required/>
+                <Input style={{margin: 5}} placeholder="passcode" ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
+                <InputButton style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Roommate">Add Roomi</InputButton>
             </Form>
             <Form onSubmit={addTask}>
-                <label style={{margin: 5}} htmlFor="task">Add Task:</label>
-                <input style={{margin: 5}} ref={taskRef} type="text" id="task" name="task" required/>
-                <input style={{margin: 5}} ref={pointRef} type="text" id="points" name="points" required/>
-                <input style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Task"/>
+                <Input style={{margin: 5}} placeholder="task" ref={taskRef} type="text" id="task" name="task" required/>
+                <Input style={{margin: 5}} placeholder="points" ref={pointRef} type="text" id="points" name="points" required/>
+                <InputButton style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Task">Add Task</InputButton>
             </Form>
-            <Link style={{color: "blue"}}  passHref href="../signin">Create New Account</Link>
-      </FormContainer>
+            <GradientButton onClick={handleClick}>Create New Account</GradientButton>
+        </FormContainer>
+      </InputContainer>
     </StyledCreate>
 ); 
 }
 
 export default Create;
+const InputButton = styled.button`
+  display: inline-block;
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  background-color: #4299e1;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  line-height: 26px;
+                
+`
+const GradientButton = styled.button`
+  width: 150px;
+  padding: 0;
+  border: none;
+  background: linear-gradient(90deg, rgba(151,193,255,1) 0%, rgba(57,130,238,1) 100%);
+  color: white;
+  border-radius: 0.3rem;
+  font-family: Intervariable, sans-serif;
+  padding: 10px 15px;
+  width: 50%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 30px;
+  margin: 20px;
+`;
+const BlueText=styled.span`
+  font-family: 'Arial';
+  font-style: normal;
+  font-weight: 700;
+  color: #0056D6;
+`
+const InputContainer = styled.div`
+  background-color: rgba(255, 255, 255, 0.6);
+  width: 40%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  border: 4px solid rgba(255, 255, 255, 0.5);
+`
+const Input = styled.input`
+  border: solid 0.1rem #bcbcbc;
+  background-color: #f8f8f8;
+  border-radius: 0.3rem;
+  padding: 10px;
+  padding-left: 15px;
+  font-family: InterVariable, sans-serif;
+  font-size: 1.1rem;
+  color: #676767;
+  width: 100%;
+  margin-top: 1rem;
+
+  ::placeholder {
+    color: #bcbcbc;
+  }
+  ::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #bcbcbc;
+  }
+`;
 const HeaderText = styled.div`
     color: black;
-    font-size: 2em;
-    margin: 30px;
+    font-size: 1.5em;
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 400;
+    position: relative;
+    top: 30px;
 `;
 const SubText = styled.div`
     color: grey;
@@ -222,7 +289,7 @@ const SubText = styled.div`
     font-size: 1em;
 `;
 const FormContainer = styled.div`
-  width: 45%;
+  width: 70%;
   display: flex;
   justify-content: center;
   align-items:center;
@@ -230,9 +297,9 @@ const FormContainer = styled.div`
   margin-top: 40px;
 `;
 const Form = styled.form`
-  position: relative;
+  /* position: relative;
   bottom: 10%;
-  width: 60%;
+  width: 60%; */
   display: flex;
   flex-direction: column;
   justify-content: center;
