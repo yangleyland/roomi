@@ -129,12 +129,10 @@
 }
 
 .taskItem {
-  list-style-type: none;
-  margin: 30px 5px;
-  font-size: 1.5em;
+  margin: 20px 30px;
 }
 .taskItem:hover {
-  color: blue;
+  background-color: rgb(228, 228, 228);
 }
 .names {
   list-style-type: none;

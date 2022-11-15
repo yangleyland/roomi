@@ -68,20 +68,31 @@ export function Points(props: PointsProps) {
   return (
     <StyledPoints>
       <NavbarText>
-        Points
+        Scoreboard
       </NavbarText>
       <NameContainer>
-        <ul>
             {users.map((user)=>(
-              <li className={styles.names}>{user[0]}: {user[1]}</li>
+              <ScoreContainer className={styles.names}>
+                <p>{user[0]}</p>
+                <p>{user[1]}</p>
+              </ScoreContainer>
             ))}
-        </ul>
       </NameContainer>
     </StyledPoints>
   );
 }
 
 export default Points;
+const ScoreContainer = styled.div`
+  list-style-type: none;
+  margin: 30px;
+  font-size: 1.5em;
+  /* border: 1px solid red; */
+  background-color:white;
+  padding: 1px 20px;
+  display: flex;
+  justify-content: space-between;
+`
 
 const NavbarText = styled.p `
   margin: 100px 30px 1px 40px;
@@ -90,6 +101,7 @@ const NavbarText = styled.p `
   padding-bottom: 10px;
   border-bottom: 4px black solid;
 `;
+
 const NameContainer=styled.div`
     width: 100%;
     height: 100%;
