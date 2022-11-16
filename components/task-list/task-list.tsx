@@ -12,10 +12,8 @@ export interface TaskListProps {
 }
 
 const StyledTaskList = styled.div`
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
-
-
-  width: 60%;
+  background: transparent;
+  width: 50%;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -31,14 +29,8 @@ export function TaskList(props: TaskListProps) {
   return (
     <StyledTaskList>
       <InnerDiv>
-        <NavbarText>Tasks: ($DATE)</NavbarText>
+        <NavbarText>Tasks</NavbarText>
         <TaskDiv>
-            {/* <ul>
-                {props.tasks.map((task:any)=>(
-                  <li className={styles.taskItem}><p>{task[0]}: {task[1]} points</p><button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</button></li>
-                ))}
-           
-            </ul> */}
             {props.tasks.map((task:any)=>(
                   <TaskItem className={styles.taskItem}>
                     <div>
@@ -78,15 +70,17 @@ font-weight: 700;
 `;
 const NavbarText = styled.p `
   color: black;
-  margin: 30px;
+  width: 80%;
   font-size: 2em;
+  /* border-bottom: 4px black solid; */
+  padding-bottom: 9px;
+  font-family: 'Lato';
+  margin: 0;
 `;
 const InnerDiv = styled.div `
   width: 90%;
-  margin-top: 40px;
-  height: 85%;
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
-
+  height: 100%;
+  background:transparent;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -106,13 +100,12 @@ const TaskItem = styled.div `
 `
 const TaskDiv = styled.div `
   width: 90%;
-  margin-top: 40px;
+  margin-top: 10px;
   margin-bottom: 30px;
   height: 85%;
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: top;
-  background-color: #eaeaea;
 `

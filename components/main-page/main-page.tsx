@@ -15,7 +15,7 @@ export interface MainPageProps {
 }
 
 const StyledMainPage = styled.div`
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+  background: transparent;
   width: 100%;
   height: 100vh;
   display: flex;

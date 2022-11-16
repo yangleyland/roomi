@@ -13,9 +13,9 @@ export interface PointsProps {
 }
 
 const StyledPoints = styled.div`
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+  background: transparent;
 
-  width: 40%;
+  width: 50%;
   height: 100%;
   display: flex;
   align-items: left;
@@ -87,23 +87,25 @@ const ScoreContainer = styled.div`
   list-style-type: none;
   margin: 30px;
   font-size: 1.5em;
-  /* border: 1px solid red; */
   background-color:white;
   padding: 1px 20px;
   display: flex;
   justify-content: space-between;
+  border: 1px solid #DCDCDC;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
 `
 
 const NavbarText = styled.p `
-  margin: 100px 30px 1px 40px;
+  margin: 0 30px 1px 40px;
+  font-family: 'Lato';
   color: black;
   font-size: 2em;
   padding-bottom: 10px;
-  border-bottom: 4px black solid;
 `;
 
 const NameContainer=styled.div`
     width: 100%;
     height: 100%;
-
+    
 `;

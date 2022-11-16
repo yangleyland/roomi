@@ -77,7 +77,7 @@ export default function Home({}) {
     return (
       <MainWrapper>
         <NavbarAlt/>
-        <p style={{margin: 60, backgroundColor:'transparent'}}>Welcome, loading...</p>
+        <WelcomeText>Welcome, loading...</WelcomeText>
         <MainPage varChange={temp} members={users} tasks={tasks}/>
       </MainWrapper>
     );
@@ -86,20 +86,29 @@ export default function Home({}) {
     return (
       <MainWrapper>
         <NavbarAlt/>
-        <p style={{margin: 60, backgroundColor:'transparent'}}>Welcome, {name}</p>
+        <WelcomeText>Welcome, {name}</WelcomeText>
         <MainPage varChange={temp} tasks={tasks} members={users}/>
       </MainWrapper>
     );
   } 
   
 }
+const WelcomeText=styled.p`
+  margin: 40px 50px 0 50px;
+  background-color:transparent;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 120px;
+
+`
 
 const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: 100vh;
-  border: 1px solid red;
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
   background-position: fixed;
   background-attachment: local;
