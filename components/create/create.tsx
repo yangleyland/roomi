@@ -118,12 +118,14 @@ export function Create(props: CreateProps) {
     }
     fetchData()
   }, [uid])
+
+
   useEffect(() => {
     async function fetchData() {
       try {
         if (point>0){
           await updateDoc(doc(db, "groups", props.count), {
-          tasks: arrayUnion({task,point})
+          tasks: arrayUnion({task,point,claimed: false})
           });
         // alert ('Data was succesfully updated')        
         }
@@ -131,7 +133,7 @@ export function Create(props: CreateProps) {
         try {
           if (point>0){
             await setDoc(doc(db, "groups",props.count), {
-            tasks: arrayUnion({task,point})
+            tasks: arrayUnion({task,point,claimed: false})
             });
           // alert ('Data was succesfully updated')          
           }

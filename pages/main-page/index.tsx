@@ -51,11 +51,10 @@ export default function Home({}) {
             }
             if (docSnap2.data().tasks){
               docSnap2.data().tasks.forEach((element: any) => {
-                taskArray.push([element.task,element.point]);
+                taskArray.push([element.task,element.point,element.claimed]);
                 console.log("task array",taskArray);
               });
               setTasks(taskArray);
-              
             }
           } else {
             // doc.data() will be undefined in this case

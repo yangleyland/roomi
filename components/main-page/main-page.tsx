@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import Points from '../../components/points/points';
 import TaskList from '../../components/task-list/task-list';
-import { db } from '../../firebase/initFirebase';
+import initFirebase, { db } from '../../firebase/initFirebase';
 
 /* eslint-disable-next-line */
 export interface MainPageProps {
@@ -24,43 +24,67 @@ const StyledMainPage = styled.div`
 `;
 
 export function MainPage(props: MainPageProps) {
+  initFirebase();
   const [temp,setTemp] = useState(0);
   const[pointTally,setPointTally]=useState([]);
 
   useEffect(() => { 
     setTemp(temp+1);
-    }, [props.varChange]); 
+
+  }, [props.varChange]); 
   
   const mainClick = async (tasker: [string, number]) => {
+
     const auth = getAuth();
     const user = auth.currentUser;
     if (user){
-      const docRef1 = doc(db, "users", user.uid);
-      await updateDoc(docRef1, {
-      points: increment(tasker[1])
-    });
+        console.log("tasker0",user.uid);
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+
+            console.log("docSnap",docSnap.data().group)
+            const docRef2 = doc(db, "groups", docSnap.data().group);
+            const docSnap2 = await getDoc(docRef2);
+            if (docSnap2.exists()){
+              const taskArray: any[]=[];
+              let run = false;
+              docSnap2.data().tasks.forEach((element: {task: string; point: any; claimed: any; }) => {
+                if (element.task==tasker[0] && element.claimed==false) {
+                  run=true;
+                }
+              });
+              if (run) {
+                const docRef1 = doc(db, "users", user.uid);
+                await updateDoc(docRef1, {
+                  points: increment(tasker[1])
+                });
+              }
+              docSnap2.data().tasks.forEach((element: {task: string; point: any; claimed: any; }) => {
+                  if (element.task==tasker[0]) {
+                    taskArray.push({task: element.task,point: element.point,claimed:true});
+                  } else {
+                    taskArray.push({task: element.task,point: element.point,claimed:element.claimed});
+                  }
+              });
+              await updateDoc(docRef2, {
+                tasks: taskArray
+              });
+            }
+            
+
+        } else {
+          console.log("No such document!");
+        }
     }
 
-
-
-    const arr:any=[];
-    const docRef = doc(db, "users", tasker[0]);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        console.log("docSnap",docSnap.data().points)
-        arr.push([docSnap.data().username,docSnap.data().points]);
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-    setPointTally(arr);
     setTemp(temp+1);
   }
   
   return(
     <StyledMainPage>
         <Points members={props.members} userValues={pointTally} temp={temp}/>
-        <TaskList tasks={props.tasks}  clicked={mainClick}/>
+        <TaskList tasks={props.tasks} temp={temp}  clicked={mainClick}/>
     </StyledMainPage>
 ); 
 }

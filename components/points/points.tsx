@@ -37,23 +37,16 @@ export function Points(props: PointsProps) {
         const docRef = doc(db, "users", member);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            console.log("docSnap",docSnap.data().points)
             arr.push([docSnap.data().username,docSnap.data().points]);
         } else {
-          // doc.data() will be undefined in this case
           console.log("No such document!");
         }
         console.log("array",arr)
-        
-        
         if (users!=arr && arr.length==props.members.length){
           setUsers(arr);
         }
-        
-       
       }
       })
-      
     }
     fetchData()
   }, [props.members,props.temp])

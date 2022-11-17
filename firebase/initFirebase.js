@@ -28,4 +28,7 @@ const app = initializeApp(clientCredentials);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+
+
+
 export { initFirebase, db,auth};

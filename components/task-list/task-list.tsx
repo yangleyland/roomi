@@ -1,14 +1,17 @@
 import { getAuth } from 'firebase/auth';
-import { doc, increment, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, increment, updateDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { db } from '../../firebase/initFirebase';
+import initFirebase, { db } from '../../firebase/initFirebase';
 import styles from '../../styles/Home.module.css';
+import {useAuthState} from "react-firebase-hooks/auth"
 
 
 /* eslint-disable-next-line */
 export interface TaskListProps {
   tasks: any;
   clicked: Function;
+  temp: number;
 }
 
 const StyledTaskList = styled.div`
@@ -22,23 +25,54 @@ const StyledTaskList = styled.div`
 `;
 
 export function TaskList(props: TaskListProps) {
+  const [tasks, setTasks] = useState(props.tasks);
+  initFirebase();
+  const auth=getAuth();
+  const [user,loading] = useAuthState(auth);
+  useEffect(() => {
+    async function fetchData() {
+      if (user){
+        console.log("user id:")
+        console.log(user.uid);
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) { 
+          const docRef2 = doc(db, "groups", docSnap.data().group);
+          const docSnap2 = await getDoc(docRef2);
+          const taskArray:any=[];
+          if (docSnap2.exists()) {
+            if (docSnap2.data().tasks){
+              docSnap2.data().tasks.forEach((element: any) => {
+                taskArray.push([element.task,element.point,element.claimed]);
+              });
+              setTasks(taskArray);
+            }
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }      
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such user!");      
+        }    
+      }
+    }
+    fetchData()
+  }, [props.temp])
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-    console.log("taskprops",props.tasks)
+
   return (
     <StyledTaskList>
       <InnerDiv>
         <NavbarText>Tasks</NavbarText>
         <TaskDiv>
-            {props.tasks.map((task:any)=>(
+            {tasks.map((task:any)=>(
                   <TaskItem className={styles.taskItem}>
                     <div>
                       <TaskName style={{margin: '10px 0 0 20px'}}>{task[0]}</TaskName>
                       <p style={{margin:'0 0 0 20px'}}>{task[1]} points</p>
                     </div>
-                    
-                    <Button onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</Button>
+                    <Button style={{backgroundColor:task[2] ? 'grey':"blue"}} onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</Button>
                   </TaskItem>
                 ))}
         </TaskDiv>
