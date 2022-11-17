@@ -4,7 +4,7 @@ admin.initializeApp();
 
 var db = admin.firestore()
 
-exports.scheduledFunctionCrontab = functions.pubsub.schedule('* * * * *')
+exports.scheduledFunctionCrontab = functions.pubsub.schedule('0 0 * * *')
   .onRun(async (context) => {
     const newDoc = db.collection('groups');
     const snapshot = await newDoc.get();
