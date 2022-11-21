@@ -37,7 +37,7 @@ const StyledCreate = styled.div`
 
 
 
-export function Create({count}:any) {
+export function Create() {
   const user = useAuthState(auth);
   const [uid, setUid] = useState(' ');
   const [email, setEmail] = useState(' ');
@@ -50,10 +50,24 @@ export function Create({count}:any) {
   const taskRef = useRef<any>(null);
   const pointRef = useRef<any>(null);
   const [users, setUsers] = useState([]);
+  const [count,setCount]=useState('0');
 
-  useEffect(()=>{
-    console.log("users",users);
-  })
+  useEffect(() => {
+    async function getData() {
+      let ignore = false;
+      
+      if (!ignore) {
+        initFirebase()
+        const coll = collection(db, "groups");
+        const snapshot = await getCountFromServer(coll);
+        const value = snapshot.data().count;
+        console.log("count",value);
+        setCount(String(value));
+      }
+      return () => { ignore = true; }
+    }
+    getData()
+    },[]);
 
   useEffect(() => {
     async function fetchData() {
