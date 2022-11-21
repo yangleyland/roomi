@@ -2,18 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import { arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
+import { arrayUnion, collection, doc, getCountFromServer, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
 import { db,auth } from '../../firebase/initFirebase'
 import { createUserWithEmailAndPassword} from "firebase/auth";
 import router, { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Link from 'next/link';
 
+export async function getStaticProps() {
+  const coll = collection(db, "groups");
+  const snapshot = await getCountFromServer(coll);
+  const value = snapshot.data().count;
+  return{
+    props:{count: String(value)}
+  } 
+}
 
 /* eslint-disable-next-line */
-export interface CreateProps {
-  count: string;
-}
+// export interface CreateProps {
+//   count: string;
+// }
 
 const StyledCreate = styled.div`
   background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
@@ -27,7 +35,7 @@ const StyledCreate = styled.div`
 
 
 
-export function Create(props: CreateProps) {
+export function Create({count}:any) {
   const user = useAuthState(auth);
   const [uid, setUid] = useState(' ');
   const [email, setEmail] = useState(' ');
@@ -47,7 +55,8 @@ export function Create(props: CreateProps) {
 
   useEffect(() => {
     async function fetchData() {
-      const docRef = doc(db, "groups", props.count);
+      const docRef = doc(db, "groups", count);
+      console.log("count",count);
       const docSnap = await getDoc(docRef);
       const ar:any=[];//change
       if (docSnap.exists()) {
@@ -85,7 +94,7 @@ export function Create(props: CreateProps) {
       if (uid!=" "){
         try {
           await setDoc(doc(db, "users", uid), {
-              group: props.count,
+              group: count,
               email: email,
               id: uid,
               points: 0,
@@ -98,13 +107,13 @@ export function Create(props: CreateProps) {
         }
     
         try {
-          await updateDoc(doc(db, "groups", props.count), {
+          await updateDoc(doc(db, "groups", count), {
               members: arrayUnion(uid)
             });
           // alert ('Data was succesfully updated')
         } catch (error) {
           try {
-            await setDoc(doc(db, "groups",props.count), {
+            await setDoc(doc(db, "groups",count), {
                 members: arrayUnion(uid)
               });
             // alert ('Data was succesfully updated')
@@ -122,9 +131,10 @@ export function Create(props: CreateProps) {
 
   useEffect(() => {
     async function fetchData() {
+      console.log("this function is called");
       try {
         if (point>0){
-          await updateDoc(doc(db, "groups", props.count), {
+          await updateDoc(doc(db, "groups", count), {
           tasks: arrayUnion({task,point,claimed: false})
           });
         // alert ('Data was succesfully updated')        
@@ -132,7 +142,7 @@ export function Create(props: CreateProps) {
       } catch (error) {
         try {
           if (point>0){
-            await setDoc(doc(db, "groups",props.count), {
+            await setDoc(doc(db, "groups",count), {
             tasks: arrayUnion({task,point,claimed: false})
             });
           // alert ('Data was succesfully updated')          

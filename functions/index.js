@@ -19,6 +19,5 @@ exports.scheduledFunctionCrontab = functions.pubsub.schedule('0 0 * * *')
                 tasks:taskArray
             })
         }
-
     });
 });
