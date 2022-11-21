@@ -26,7 +26,7 @@ export default function Home({count}:any) {
   return (
     <MainWrapper>
       <NavbarAlt/>
-      <Create count={count}/>
+      <Create/>
     </MainWrapper>
   );
 }
