@@ -14,9 +14,10 @@ export async function getStaticProps() {
   const coll = collection(db, "groups");
   const snapshot = await getCountFromServer(coll);
   const value = snapshot.data().count;
+  console.log("count",value);
   return{
     props:{count: String(value)}
-  } 
+  }
 }
 
 /* eslint-disable-next-line */
@@ -57,7 +58,7 @@ export function Create({count}:any) {
   useEffect(() => {
     async function fetchData() {
       const docRef = doc(db, "groups", count);
-      console.log("count",count);
+      
       const docSnap = await getDoc(docRef);
       const ar:any=[];//change
       if (docSnap.exists()) {
