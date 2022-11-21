@@ -50,11 +50,12 @@ export function Create() {
   const taskRef = useRef<any>(null);
   const pointRef = useRef<any>(null);
   const [users, setUsers] = useState([]);
+  const [nameArray,setNameArray]= useState<any>([]);
   const [count,setCount]=useState('0');
+  const [ignore,setIgnore]=useState(false);
 
   useEffect(() => {
     async function getData() {
-      let ignore = false;
       
       if (!ignore) {
         initFirebase()
@@ -64,7 +65,7 @@ export function Create() {
         console.log("count",value);
         setCount(String(value));
       }
-      return () => { ignore = true; }
+      return () => { setIgnore(true) }
     }
     getData()
     },[]);
@@ -88,15 +89,14 @@ export function Create() {
               console.log("No such document!");
             }
             setUsers(ar);
+            console.log("array",ar)
           });
-          
-          // console.log("users",users);
         }
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
       } 
-      console.log(users);
+      console.log("users",users);
     }
     fetchData()
   }, [uid])
@@ -190,6 +190,8 @@ export function Create() {
         alert(errorMessage)
       });
 
+      setNameArray((nameArray: any) => [...nameArray, firstRef.current.value])
+      console.log("firstref",firstRef.current.value)
       setEmail(emailRef.current.value);
       setUsername(firstRef.current.value);
     }
@@ -213,8 +215,8 @@ export function Create() {
     <StyledCreate>
       <InputContainer>
       <HeaderText>Create New <BlueText>Roomi</BlueText> Group</HeaderText>
-        {users.map((user)=>(
-          <p>{user}</p>
+        {users.map((user:any)=>(
+          <UserText>{user}</UserText>
         ))}
         <FormContainer>
             <Form onSubmit={handleSubmit}>
@@ -236,6 +238,22 @@ export function Create() {
 }
 
 export default Create;
+
+const UserText = styled.p`
+  position: relative;
+  top: 30px;
+  border: 1px solid #DCDCDC;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  width: 30%;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 5px;
+  background-color: white;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  margin: 5px;
+`
 const InputButton = styled.button`
   display: inline-block;
   outline: 0;
@@ -274,7 +292,6 @@ const BlueText=styled.span`
 const InputContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.6);
   width: 40%;
-  height: 560px;
   display: flex;
   flex-direction: column;
   justify-content: center;
