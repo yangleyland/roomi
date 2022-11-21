@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { arrayUnion, collection, doc, getCountFromServer, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
-import { db,auth } from '../../firebase/initFirebase'
+import initFirebase, { db,auth } from '../../firebase/initFirebase'
 import { createUserWithEmailAndPassword} from "firebase/auth";
 import router, { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Link from 'next/link';
 
 export async function getStaticProps() {
+  initFirebase()
   const coll = collection(db, "groups");
   const snapshot = await getCountFromServer(coll);
   const value = snapshot.data().count;
