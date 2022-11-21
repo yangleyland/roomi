@@ -9,7 +9,7 @@ import router, { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Link from 'next/link';
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   initFirebase()
   const coll = collection(db, "groups");
   const snapshot = await getCountFromServer(coll);
