@@ -43,7 +43,7 @@ export function TaskList(props: TaskListProps) {
           if (docSnap2.exists()) {
             if (docSnap2.data().tasks){
               docSnap2.data().tasks.forEach((element: any) => {
-                taskArray.push([element.task,element.point,element.claimed]);
+                taskArray.push([element.task,element.points,element.claimed]);
               });
               setTasks(taskArray);
             }

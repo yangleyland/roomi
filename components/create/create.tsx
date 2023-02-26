@@ -1,32 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import firebase from 'firebase/app'
-import 'firebase/firestore'
-import { arrayUnion, collection, doc, getCountFromServer, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc } from "firebase/firestore"; 
-import initFirebase, { db,auth } from '../../firebase/initFirebase'
-import { createUserWithEmailAndPassword} from "firebase/auth";
-import router, { useRouter } from 'next/router';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import Link from 'next/link';
-
-export async function getServerSideProps() {
-  initFirebase()
-  const coll = collection(db, "groups");
-  const snapshot = await getCountFromServer(coll);
-  const value = snapshot.data().count;
-  console.log("count",value);
-  return{
-    props:{count: String(value)}
-  }
-}
-
-/* eslint-disable-next-line */
-// export interface CreateProps {
-//   count: string;
-// }
+import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { fetchSignInMethodsForEmail, getAuth } from "firebase/auth";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db, auth } from "../../firebase/initFirebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import router, { useRouter } from "next/router";
 
 const StyledCreate = styled.div`
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(89,139,213,1) 100%);
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(89, 139, 213, 1) 100%
+  );
   width: 100%;
   height: 100vh;
   display: flex;
@@ -35,206 +34,242 @@ const StyledCreate = styled.div`
   align-items: center;
 `;
 
-
-
 export function Create() {
-  const user = useAuthState(auth);
-  const [uid, setUid] = useState(' ');
-  const [email, setEmail] = useState(' ');
-  const [username, setUsername] = useState(' ');
-  const [task, setTask] = useState(' ');
-  const [point, setPoint] = useState(0);
   const firstRef = useRef<any>(null);
   const emailRef = useRef<any>(null);
   const passcodeRef = useRef<any>(null);
   const taskRef = useRef<any>(null);
   const pointRef = useRef<any>(null);
-  const [users, setUsers] = useState([]);
-  const [nameArray,setNameArray]= useState<any>([]);
-  const [count,setCount]=useState('0');
-  const [ignore,setIgnore]=useState(false);
+  const [nameArray, setNameArray] = useState<any>([]);
+  const [taskList, setTaskList] = useState<any>([]);
+  const [authArray, setAuthArray] = useState<any>([]);
+  const [userArray, setUserArray] = useState<any>([]);
 
-  useEffect(() => {
-    async function getData() {
-      
-      if (!ignore) {
-        initFirebase()
-        const coll = collection(db, "groups");
-        const snapshot = await getCountFromServer(coll);
-        const value = snapshot.data().count;
-        console.log("count",value);
-        setCount(String(value));
-      }
-      return () => { setIgnore(true) }
+  async function createGroup() {
+    const groupCollectionRef = collection(db, "groups");
+
+    const groupDocRef = await addDoc(groupCollectionRef, {
+      members: [],
+      tasks: taskList,
+    });
+    return groupDocRef.id;
+  }
+
+  async function addUser(
+    groupId: any,
+    emailinput: any,
+    usernameinput: any,
+    uid: any
+  ) {
+    try {
+      console.log("uid", uid);
+      await setDoc(doc(db, "users", uid), {
+        email: emailinput,
+        group: groupId,
+        points: 0,
+        username: usernameinput,
+      });
+      // console.log("id", groupDocRef.id);
+      return uid;
+    } catch (error) {
+      console.log(error);
     }
-    getData()
-    },[]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const docRef = doc(db, "groups", count);
-      
-      const docSnap = await getDoc(docRef);
-      const ar:any=[];//change
-      if (docSnap.exists()) {
-        
-        // console.log("Document data:", docSnap.data().members);
-        if (docSnap.data().members){
-          docSnap.data().members.forEach( async (element: any) => {
-            const docRef2 = doc(db, "users", element);
-            const docSnap2 = await getDoc(docRef2);
-            if (docSnap2.exists()) {
-              ar.push(docSnap2.data().username)
-            } else {
-              console.log("No such document!");
-            }
-            setUsers(ar);
-            console.log("array",ar)
-          });
-        }
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      } 
-      console.log("users",users);
-    }
-    fetchData()
-  }, [uid])
-
-
-
-  
-
-  useEffect(() => {
-    async function fetchData() {
-      if (uid!=" "){
-        try {
-          await setDoc(doc(db, "users", uid), {
-              group: count,
-              email: email,
-              id: uid,
-              points: 0,
-              username: username,
-            });
-          // alert ('Data was succesfully updated')
-        } catch (error) {
-            console.log(error)
-            alert(error)
-        }
-    
-        try {
-          await updateDoc(doc(db, "groups", count), {
-              members: arrayUnion(uid)
-            });
-          // alert ('Data was succesfully updated')
-        } catch (error) {
-          try {
-            await setDoc(doc(db, "groups",count), {
-                members: arrayUnion(uid)
-              });
-            // alert ('Data was succesfully updated')
-          } catch (error) {
-              console.log(error)
-              alert(error)
-          }
-        }
-        setUid(" ");     
-      }
-    }
-    fetchData()
-  }, [uid])
-
-
-  useEffect(() => {
-    async function fetchData() {
-      console.log("this function is called");
-      try {
-        if (point>0){
-          await updateDoc(doc(db, "groups", count), {
-          tasks: arrayUnion({task,point,claimed: false})
-          });
-        // alert ('Data was succesfully updated')        
-        }
-      } catch (error) {
-        try {
-          if (point>0){
-            await setDoc(doc(db, "groups",count), {
-            tasks: arrayUnion({task,point,claimed: false})
-            });
-          // alert ('Data was succesfully updated')          
-          }
-
-        } catch (error) {
-            console.log(error)
-            alert(error)
-        }
-      }
-    }
-    fetchData()
-  }, [point,task])
+  }
 
   const handleSubmit = async (event: any) => {
-
-    console.log('handleSubmit ran');
+    console.log("handleSubmit ran");
     event.preventDefault(); // 👈️ prevent page refresh
-    if (emailRef.current != null && passcodeRef.current!=null && firstRef.current!=null){
-       createUserWithEmailAndPassword(auth, emailRef.current.value, passcodeRef.current.value)
-      .then((userCredential) => {
-        const user=userCredential.user;
-        setUid(user.uid);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log("failure")
-        alert(errorMessage)
-      });
-
-      setNameArray((nameArray: any) => [...nameArray, firstRef.current.value])
-      console.log("firstref",firstRef.current.value)
-      setEmail(emailRef.current.value);
-      setUsername(firstRef.current.value);
+    let newArray = [...nameArray, firstRef.current.value];
+    setNameArray(newArray);
+    newArray = [
+      ...userArray,
+      {
+        email: emailRef.current.value,
+        password: passcodeRef.current.value,
+        username: firstRef.current.value,
+        uid: "",
+      },
+    ];
+    setUserArray(newArray);
+    if (
+      emailRef.current != null &&
+      passcodeRef.current != null &&
+      firstRef.current != null
+    ) {
+      fetchSignInMethodsForEmail(auth, emailRef.current.value).then(
+        (result) => {
+          if (result.length > 0) {
+            const errorMessage = "This user already exists";
+            console.log("failure");
+            alert(errorMessage);
+            setNameArray(nameArray);
+          }
+        }
+      );
     }
-   
+
     event.target.reset();
   };
   const addTask = (event: any) => {
-    console.log('handleSubmit ran');
     event.preventDefault(); // 👈️ prevent page refresh
-    if (taskRef.current!=null && pointRef.current!=null){
-      setTask(taskRef.current.value);
-      setPoint(pointRef.current.value);
+    if (taskRef.current != null && pointRef.current != null) {
+      const newArray = [
+        ...taskList,
+        {
+          task: taskRef.current.value,
+          points: pointRef.current.value,
+          claimed: false,
+        },
+      ];
+      setTaskList(newArray);
     }
+
     event.target.reset();
   };
-  const handleClick = () => {
+  const handleClick = async () => {
+    console.log(authArray);
     router.push("../signin");
+    let idArray:any={};
+    const promises: any[] = [];
+    userArray.forEach((element: any) => {
+      // createUserWithEmailAndPassword(auth, element.email, element.password)
+      //   .then((userCredential) => {
+      //     idArray.push(userCredential.user.uid);
+      //     promises.push(userCredential);
+      //   })
+      //   .catch((error) => {
+      //     const errorCode = error.code;
+      //     const errorMessage = error.message;
+      //     console.log("failure");
+      //     alert(errorMessage);
+      //   });
+      const promise = new Promise<void>((resolve, reject) => {
+        createUserWithEmailAndPassword(auth, element.email, element.password)
+          .then((userCredential) => {
+            idArray[element.username]=userCredential.user.uid;
+            
+            resolve();
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log("failure");
+            alert(errorMessage);
+            reject(error);
+          });
+          
+      });
+      promises.push(promise);
+    });
+    await Promise.all(promises);
+    console.log("idarray", idArray);
+    let groupId = await createGroup();
+    let memberArray: any[] = [];
+    console.log(userArray);
+    for (let i = 0; i < userArray.length; i++) {
+      const memberId = await addUser(
+        groupId,
+        userArray[i].email,
+        userArray[i].username,
+        idArray[userArray[i].username]
+      );
+      console.log("member id", memberId);
+      memberArray.push(memberId);
+    }
+    console.log("blah");
+    console.log("member array", memberArray);
+    console.log("groupId:", groupId);
+    const groupDocRef = doc(db, "groups", groupId);
+    await updateDoc(groupDocRef, {
+      members: memberArray,
+    });
   };
 
-  return(
+  return (
     <StyledCreate>
       <InputContainer>
-      <HeaderText>Create New <BlueText>Roomi</BlueText> Group</HeaderText>
-        {users.map((user:any)=>(
-          <UserText>{user}</UserText>
+        <HeaderText>
+          Create New <BlueText>Roomi</BlueText> Group
+        </HeaderText>
+        {userArray.map((user: any) => (
+          <UserText>{user.username}</UserText>
+        ))}
+        {taskList.map((task: any) => (
+          <UserText>{task.task}</UserText>
         ))}
         <FormContainer>
-            <Form onSubmit={handleSubmit}>
-                <Input style={{margin: 5}} placeholder="name" ref={firstRef} type="name" id="name" name="name" required/>
-                <Input style={{margin: 5}} ref={emailRef} placeholder="email" type="email" id="email" name="email" required/>
-                <Input style={{margin: 5}} placeholder="passcode" ref={passcodeRef} type="password" id="passcode" name="passcode" required/>
-                <InputButton style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Roommate">Add Roomi</InputButton>
-            </Form>
-            <Form onSubmit={addTask}>
-                <Input style={{margin: 5}} placeholder="task" ref={taskRef} type="text" id="task" name="task" required/>
-                <Input style={{margin: 5}} placeholder="points" ref={pointRef} type="text" id="points" name="points" required/>
-                <InputButton style={{margin: 5, width: 130}} type="submit" id="submit" value="Add Task">Add Task</InputButton>
-            </Form>
-            <GradientButton onClick={handleClick}>Create New Account</GradientButton>
+          <Form onSubmit={handleSubmit}>
+            <Input
+              style={{ margin: 5 }}
+              placeholder="name"
+              ref={firstRef}
+              type="name"
+              id="name"
+              name="name"
+              required
+            />
+            <Input
+              style={{ margin: 5 }}
+              ref={emailRef}
+              placeholder="email"
+              type="email"
+              id="email"
+              name="email"
+              required
+            />
+            <Input
+              style={{ margin: 5 }}
+              placeholder="passcode"
+              ref={passcodeRef}
+              type="password"
+              id="passcode"
+              name="passcode"
+              required
+            />
+            <InputButton
+              style={{ margin: 5, width: 130 }}
+              type="submit"
+              id="submit"
+              value="Add Roommate"
+            >
+              Add Roomi
+            </InputButton>
+          </Form>
+          <Form onSubmit={addTask}>
+            <Input
+              style={{ margin: 5 }}
+              placeholder="task"
+              ref={taskRef}
+              type="text"
+              id="task"
+              name="task"
+              required
+            />
+            <Input
+              style={{ margin: 5 }}
+              placeholder="points"
+              ref={pointRef}
+              type="text"
+              id="points"
+              name="points"
+              required
+            />
+            <InputButton
+              style={{ margin: 5, width: 130 }}
+              type="submit"
+              id="submit"
+              value="Add Task"
+            >
+              Add Task
+            </InputButton>
+          </Form>
+          <GradientButton onClick={handleClick}>
+            Create New Account
+          </GradientButton>
         </FormContainer>
       </InputContainer>
     </StyledCreate>
-); 
+  );
 }
 
 export default Create;
@@ -242,18 +277,18 @@ export default Create;
 const UserText = styled.p`
   position: relative;
   top: 30px;
-  border: 1px solid #DCDCDC;
+  border: 1px solid #dcdcdc;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
   width: 30%;
   text-align: center;
   line-height: 30px;
   border-radius: 5px;
   background-color: white;
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 700;
   margin: 5px;
-`
+`;
 const InputButton = styled.button`
   display: inline-block;
   outline: 0;
@@ -266,13 +301,16 @@ const InputButton = styled.button`
   font-weight: 700;
   color: white;
   line-height: 26px;
-                
-`
+`;
 const GradientButton = styled.button`
   width: 150px;
   padding: 0;
   border: none;
-  background: linear-gradient(90deg, rgba(151,193,255,1) 0%, rgba(57,130,238,1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(151, 193, 255, 1) 0%,
+    rgba(57, 130, 238, 1) 100%
+  );
   color: white;
   border-radius: 0.3rem;
   font-family: Intervariable, sans-serif;
@@ -283,12 +321,12 @@ const GradientButton = styled.button`
   margin-top: 30px;
   margin: 20px;
 `;
-const BlueText=styled.span`
-  font-family: 'Arial';
+const BlueText = styled.span`
+  font-family: "Arial";
   font-style: normal;
   font-weight: 700;
-  color: #0056D6;
-`
+  color: #0056d6;
+`;
 const InputContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.6);
   width: 40%;
@@ -298,7 +336,7 @@ const InputContainer = styled.div`
   align-items: center;
   border-radius: 20px;
   border: 4px solid rgba(255, 255, 255, 0.5);
-`
+`;
 const Input = styled.input`
   border: solid 0.1rem #bcbcbc;
   background-color: #f8f8f8;
@@ -320,24 +358,24 @@ const Input = styled.input`
   }
 `;
 const HeaderText = styled.div`
-    color: black;
-    font-size: 1.5em;
-    font-family: 'Arial';
-    font-style: normal;
-    font-weight: 400;
-    position: relative;
-    top: 30px;
+  color: black;
+  font-size: 1.5em;
+  font-family: "Arial";
+  font-style: normal;
+  font-weight: 400;
+  position: relative;
+  top: 30px;
 `;
 const SubText = styled.div`
-    color: grey;
-    margin: 10px;
-    font-size: 1em;
+  color: grey;
+  margin: 10px;
+  font-size: 1em;
 `;
 const FormContainer = styled.div`
   width: 70%;
   display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
   flex-direction: column;
   margin-top: 40px;
 `;
@@ -349,5 +387,4 @@ const Form = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: left;
-
 `;

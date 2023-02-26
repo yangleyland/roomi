@@ -49,7 +49,7 @@ export function MainPage(props: MainPageProps) {
             if (docSnap2.exists()){
               const taskArray: any[]=[];
               let run = false;
-              docSnap2.data().tasks.forEach((element: {task: string; point: any; claimed: any; }) => {
+              docSnap2.data().tasks.forEach((element: {task: string; points: any; claimed: any; }) => {
                 if (element.task==tasker[0] && element.claimed==false) {
                   run=true;
                 }
@@ -60,11 +60,11 @@ export function MainPage(props: MainPageProps) {
                   points: increment(tasker[1])
                 });
               }
-              docSnap2.data().tasks.forEach((element: {task: string; point: any; claimed: any; }) => {
+              docSnap2.data().tasks.forEach((element: {task: string; points: any; claimed: any; }) => {
                   if (element.task==tasker[0]) {
-                    taskArray.push({task: element.task,point: element.point,claimed:true});
+                    taskArray.push({task: element.task,points: element.points,claimed:true});
                   } else {
-                    taskArray.push({task: element.task,point: element.point,claimed:element.claimed});
+                    taskArray.push({task: element.task,points: element.points,claimed:element.claimed});
                   }
               });
               await updateDoc(docRef2, {
