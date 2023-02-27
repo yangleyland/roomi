@@ -26,48 +26,16 @@ export function Points(props: PointsProps) {
   const [users, setUsers] = useState([]);
   
   
-
-
-  useEffect(() => {
-    async function fetchData() {
-      const arr:any=[];
-      props.members.forEach(async (member: any) => {
-      if (member){
-        console.log("member",member);
-        const docRef = doc(db, "users", member);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            arr.push([docSnap.data().username,docSnap.data().points]);
-        } else {
-          console.log("No such document!");
-        }
-        console.log("array",arr)
-        if (users!=arr && arr.length==props.members.length){
-          setUsers(arr);
-        }
-      }
-      })
-    }
-    fetchData()
-  }, [props.members,props.temp])
-
-
-  console.log("tempVar",props.temp);
-  useEffect(() => {
-    setUsers(users);
-  }, [users]);
-  console.log("users:  ",users)
-
   return (
     <StyledPoints>
       <NavbarText>
         Scoreboard
       </NavbarText>
       <NameContainer>
-            {users.map((user)=>(
+            {props.members.map((user:any)=>(
               <ScoreContainer className={styles.names}>
-                <p>{user[0]}</p>
-                <p>{user[1]}</p>
+                <p>{user.name}</p>
+                <p>{user.points}</p>
               </ScoreContainer>
             ))}
       </NameContainer>

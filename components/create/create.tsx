@@ -44,6 +44,9 @@ export function Create() {
   const [taskList, setTaskList] = useState<any>([]);
   const [authArray, setAuthArray] = useState<any>([]);
   const [userArray, setUserArray] = useState<any>([]);
+  async function createTaskCollection () {
+
+  }
 
   async function createGroup() {
     const groupCollectionRef = collection(db, "groups");
@@ -62,14 +65,12 @@ export function Create() {
     uid: any
   ) {
     try {
-      console.log("uid", uid);
       await setDoc(doc(db, "users", uid), {
         email: emailinput,
         group: groupId,
         points: 0,
         username: usernameinput,
       });
-      // console.log("id", groupDocRef.id);
       return uid;
     } catch (error) {
       console.log(error);
@@ -77,8 +78,8 @@ export function Create() {
   }
 
   const handleSubmit = async (event: any) => {
-    console.log("handleSubmit ran");
     event.preventDefault(); // 👈️ prevent page refresh
+    let originalArray = [...nameArray];
     let newArray = [...nameArray, firstRef.current.value];
     setNameArray(newArray);
     newArray = [
@@ -99,15 +100,22 @@ export function Create() {
       fetchSignInMethodsForEmail(auth, emailRef.current.value).then(
         (result) => {
           if (result.length > 0) {
+            newArray = [...userArray];
+            setUserArray(newArray);
             const errorMessage = "This user already exists";
             console.log("failure");
             alert(errorMessage);
-            setNameArray(nameArray);
+
           }
         }
       );
     }
-
+    if (passcodeRef.current.value.length <= 6) {
+      newArray = [...userArray];
+      setUserArray(newArray);
+      const errorMessage = "Please enter a passcode longer that 6 characters";
+      alert(errorMessage);
+    }
     event.target.reset();
   };
   const addTask = (event: any) => {
@@ -129,25 +137,14 @@ export function Create() {
   const handleClick = async () => {
     console.log(authArray);
     router.push("../signin");
-    let idArray:any={};
+    let idArray: any = {};
     const promises: any[] = [];
     userArray.forEach((element: any) => {
-      // createUserWithEmailAndPassword(auth, element.email, element.password)
-      //   .then((userCredential) => {
-      //     idArray.push(userCredential.user.uid);
-      //     promises.push(userCredential);
-      //   })
-      //   .catch((error) => {
-      //     const errorCode = error.code;
-      //     const errorMessage = error.message;
-      //     console.log("failure");
-      //     alert(errorMessage);
-      //   });
       const promise = new Promise<void>((resolve, reject) => {
         createUserWithEmailAndPassword(auth, element.email, element.password)
           .then((userCredential) => {
-            idArray[element.username]=userCredential.user.uid;
-            
+            idArray[element.username] = userCredential.user.uid;
+
             resolve();
           })
           .catch((error) => {
@@ -157,12 +154,10 @@ export function Create() {
             alert(errorMessage);
             reject(error);
           });
-          
       });
       promises.push(promise);
     });
     await Promise.all(promises);
-    console.log("idarray", idArray);
     let groupId = await createGroup();
     let memberArray: any[] = [];
     console.log(userArray);
@@ -173,12 +168,8 @@ export function Create() {
         userArray[i].username,
         idArray[userArray[i].username]
       );
-      console.log("member id", memberId);
       memberArray.push(memberId);
     }
-    console.log("blah");
-    console.log("member array", memberArray);
-    console.log("groupId:", groupId);
     const groupDocRef = doc(db, "groups", groupId);
     await updateDoc(groupDocRef, {
       members: memberArray,

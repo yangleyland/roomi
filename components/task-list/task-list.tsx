@@ -1,17 +1,21 @@
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, increment, updateDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import initFirebase, { db } from '../../firebase/initFirebase';
-import styles from '../../styles/Home.module.css';
-import {useAuthState} from "react-firebase-hooks/auth"
-
+import { getAuth } from "firebase/auth";
+import { doc, getDoc, increment, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import initFirebase, { db } from "../../firebase/initFirebase";
+import styles from "../../styles/Home.module.css";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { updateTasks } from "../../functions/taskFunctions";
+import { updateScore } from "../../functions/roommateFunctions";
 
 /* eslint-disable-next-line */
 export interface TaskListProps {
   tasks: any;
-  clicked: Function;
+  // clicked: Function;
   temp: number;
+  uid: any;
+  groupId: any;
+  fetchData: any;
 }
 
 const StyledTaskList = styled.div`
@@ -25,56 +29,51 @@ const StyledTaskList = styled.div`
 `;
 
 export function TaskList(props: TaskListProps) {
-  const [tasks, setTasks] = useState(props.tasks);
-  initFirebase();
-  const auth=getAuth();
-  const [user,loading] = useAuthState(auth);
+  const [internalTask, SetInternalTask] = useState(props.tasks);
+  
   useEffect(() => {
-    async function fetchData() {
-      if (user){
-        console.log("user id:")
-        console.log(user.uid);
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) { 
-          const docRef2 = doc(db, "groups", docSnap.data().group);
-          const docSnap2 = await getDoc(docRef2);
-          const taskArray:any=[];
-          if (docSnap2.exists()) {
-            if (docSnap2.data().tasks){
-              docSnap2.data().tasks.forEach((element: any) => {
-                taskArray.push([element.task,element.points,element.claimed]);
-              });
-              setTasks(taskArray);
-            }
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-          }      
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such user!");      
-        }    
-      }
+    SetInternalTask(props.tasks);
+    console.log("setInternalTask called");
+  }, [props.tasks]);
+  
+  function handleClick(index: any, points: any, claimed: boolean) {
+    console.log(internalTask);
+    let newInternalTask = [...internalTask];
+    newInternalTask[index].claimed = true;
+    SetInternalTask(newInternalTask);
+    console.log(newInternalTask);
+    handleClick1(index, points, claimed);
+  }
+  async function handleClick1(index: any, points: any, claimed: boolean) {
+    if (!claimed) {
+      await updateTasks(props.groupId, index);
+      await updateScore(props.uid, points);
+      props.fetchData();
     }
-    fetchData()
-  }, [props.temp])
-
-
+  }
   return (
     <StyledTaskList>
       <InnerDiv>
         <NavbarText>Tasks</NavbarText>
         <TaskDiv>
-            {tasks.map((task:any)=>(
-                  <TaskItem className={styles.taskItem}>
-                    <div>
-                      <TaskName style={{margin: '10px 0 0 20px'}}>{task[0]}</TaskName>
-                      <p style={{margin:'0 0 0 20px'}}>{task[1]} points</p>
-                    </div>
-                    <Button style={{backgroundColor:task[2] ? 'grey':"blue"}} onClick={(tasker) => {props.clicked([task[0],task[1]])}}>claim task</Button>
-                  </TaskItem>
-                ))}
+          {internalTask.map((element: any, index: any) => (
+            <TaskItem className={styles.taskItem}>
+              <div>
+                <TaskName style={{ margin: "10px 0 0 20px" }}>
+                  {element.task}
+                </TaskName>
+                <p style={{ margin: "0 0 0 20px" }}>{element.points} points</p>
+              </div>
+              <Button
+                onClick={() =>
+                  handleClick(index, element.points, element.claimed)
+                }
+                style={{ backgroundColor: element.claimed ? "grey" : "blue" }}
+              >
+                claim task
+              </Button>
+            </TaskItem>
+          ))}
         </TaskDiv>
       </InnerDiv>
     </StyledTaskList>
@@ -95,44 +94,44 @@ const Button = styled.button`
   font-size: 16px;
   font-weight: 700;
   color: white;
-  line-height: 26px;         
-`
-const TaskName = styled.p `
-font-family: 'Lato';
-font-style: normal;
-font-weight: 700;
+  line-height: 26px;
 `;
-const NavbarText = styled.p `
+const TaskName = styled.p`
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+`;
+const NavbarText = styled.p`
   color: black;
   width: 80%;
   font-size: 2em;
   /* border-bottom: 4px black solid; */
   padding-bottom: 9px;
-  font-family: 'Lato';
+  font-family: "Lato";
   margin: 0;
 `;
-const InnerDiv = styled.div `
+const InnerDiv = styled.div`
   width: 90%;
   height: 100%;
-  background:transparent;
+  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-`
-const TaskItem = styled.div `
+`;
+const TaskItem = styled.div`
   width: 364px;
   height: 63px;
   left: 32px;
   top: 370px;
-  background: #FFFFFF;
-  border: 1px solid #DCDCDC;
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
   display: flex;
   justify-content: space-between;
-`
-const TaskDiv = styled.div `
+`;
+const TaskDiv = styled.div`
   width: 90%;
   margin-top: 10px;
   margin-bottom: 30px;
@@ -142,4 +141,4 @@ const TaskDiv = styled.div `
   flex-direction: column;
   justify-content: flex-start;
   align-items: top;
-`
+`;
